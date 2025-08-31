@@ -5,6 +5,7 @@ import logo from "./assets/Images/logo.png";
 import { RxDashboard } from "react-icons/rx";
 
 import { BsBoxSeam } from "react-icons/bs";
+import { BiPackage } from "react-icons/bi";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { RiBuildingLine } from "react-icons/ri";
 import { GrAnalytics } from "react-icons/gr";
@@ -28,7 +29,7 @@ export const Sidebar: React.FC = () => {
     {
       label: "Products",
       path: "/products",
-      icon: <Package size={20} color="#2b2c2c" />,
+      icon: <BiPackage />,
     },
     {
       label: "Orders",
@@ -131,7 +132,7 @@ export const Sidebar: React.FC = () => {
 // Sidebar.tsx
 export const menuItems = [
   { label: "Dashboard", path: "/dashboard", icon: <RxDashboard /> },
-  { label: "Products", path: "/products", icon: <Package /> },
+  { label: "Products", path: "/products", icon: <BiPackage /> },
   { label: "Orders", path: "/orders", icon: <HiOutlineShoppingBag /> },
   {
     label: "Inventory Management",

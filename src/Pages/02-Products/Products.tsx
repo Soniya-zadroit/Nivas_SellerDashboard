@@ -11,6 +11,8 @@ import copy from "../../assets/Icons/copy.png";
 import { PlainDropdown } from "../../components/LabelSelect";
 import group from "../../assets/Icons/group.png";
 import { IoMdArrowForward } from "react-icons/io";
+import Bulkupload from "./Bulkupload";
+
 const pathToLabel: Record<string, string> = {
   "/emptydashboard": "Dashboard",
   "/dashboard": "Dashboard",
@@ -348,6 +350,10 @@ const Products: React.FC = () => {
   const location = useLocation();
   const currentLabel = pathToLabel[location.pathname] || "Products";
 
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Breadcrumb items
   const breadcrumbItems: MenuItem[] = [{ label: currentLabel }];
   const home: MenuItem = { icon: "pi pi-home", url: "/dashboard" };
@@ -410,18 +416,19 @@ const Products: React.FC = () => {
     }
 
     setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   }, [searchText, selectedCategory, selectedStock]);
+
+  // Calculate pagination values
+  const totalItems = filteredProducts.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
 
   // Custom column templates
   const productTemplate = (rowData: any) => (
     <div className="flex items-center gap-2">
-      {/* <img
-        src={rowData.product.image}
-        alt={rowData.product.name}
-        className="w-8 h-8 rounded object-cover"
-      /> */}
       <img src={group} alt="product" className="w-8 h-8 rounded object-cover" />
-
       <span className="font-medium text-xs">{rowData.product.name}</span>
     </div>
   );
@@ -507,152 +514,185 @@ const Products: React.FC = () => {
     </div>
   );
 
+  // Custom pagination template to match the design
+  const customPaginationTemplate = () => {
+    if (totalItems === 0) return null;
+
+    return (
+      <div className="flex items-center justify-between w-full px-4 py-3 bg-white border-t">
+        {/* Left side - Products count */}
+        <div className="flex items-center text-sm text-gray-600">
+          <span className="font-medium text-gray-900">Products</span>
+          <span className="mx-2">{startIndex}</span>
+          <span className="mx-1">of</span>
+          <span className="mx-1">{totalItems}</span>
+        </div>
+
+        {/* Right side - Navigation and page selector */}
+        <div className="flex items-center gap-4">
+          {/* Next page button */}
+          <button
+            className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() =>
+              setCurrentPage(Math.min(currentPage + 1, totalPages))
+            }
+            disabled={currentPage >= totalPages}
+          >
+            <span>Next page</span>
+            <IoMdArrowForward className="text-sm" />
+          </button>
+        </div>
+
+        {/* Page selector */}
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>Page</span>
+          <select
+            className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+            value={currentPage}
+            onChange={(e) => setCurrentPage(Number(e.target.value))}
+          >
+            {Array.from({ length: totalPages }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+          <span>of {totalPages}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className=" bg-gray-50">
-      {/* Breadcrumb */}
-      <BreadCrumb
-        model={breadcrumbItems}
-        home={home}
-        className="mb-6"
-        style={{ fontSize: "18px", fontWeight: 700 }}
-      />
+    <div>
+      <div className=" bg-gray-50">
+        {/* Breadcrumb */}
+        <BreadCrumb
+          model={breadcrumbItems}
+          home={home}
+          className="mb-6"
+          style={{ fontSize: "18px", fontWeight: 700 }}
+        />
 
-      {/* Top Filter Bar */}
-      <div className="flex lg:flex-row md:flex-col items-center overflow-hidden w-[full] bg-white shadow-sm h-[8vh] p-3 gap-2 mb-2">
-        <div className=" flex flex-row gap-2 flex-grow">
-          {/* Search */}
-          <div className="relative   min-w-[100px]">
-            <Search className="absolute left-2 top-2.5 text-gray-400 w-3 h-3" />
-            <input
-              type="text"
-              placeholder="Search for Products"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 text-xs"
-            />
+        {/* Top Filter Bar */}
+        <div className="flex lg:flex-row md:flex-col items-center overflow-hidden w-[full] bg-white shadow-sm h-[8vh] p-3 gap-2 mb-2">
+          <div className=" flex flex-row gap-2 flex-grow">
+            {/* Search */}
+            <div className="relative   min-w-[100px]">
+              <Search className="absolute left-2 top-2.5 text-gray-400 w-3 h-3" />
+              <input
+                type="text"
+                placeholder="Search for Products"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 text-xs"
+              />
+            </div>
+
+            {/* Categories Dropdown */}
+            <div className="min-w-[150px] ">
+              <PlainDropdown
+                value={selectedCategory}
+                onChange={(val) => setSelectedCategory(val)}
+                options={categories}
+              />
+            </div>
+
+            {/* Stocks Dropdown */}
+            <div>
+              <PlainDropdown
+                value={selectedStock}
+                onChange={(val) => setSelectedStock(val)}
+                options={stocks}
+              />
+            </div>
           </div>
 
-          {/* Categories Dropdown */}
-          <div>
-            <PlainDropdown
-              value={selectedCategory}
-              onChange={(val) => setSelectedCategory(val)}
-              options={categories}
-            />
-          </div>
-
-          {/* Stocks Dropdown */}
-          <div>
-            <PlainDropdown
-              value={selectedStock}
-              onChange={(val) => setSelectedStock(val)}
-              options={stocks}
-            />
+          {/* Buttons */}
+          <div className="flex lg:flex-row md:flex-row gap-2">
+            <button
+              onClick={() => setIsBulkOpen(true)}
+              className="border flex flex-row gap-1 cursor-pointer border-gray-400 rounded-full px-3 py-1.5 text-xs font-medium"
+            >
+              <span>
+                <img className="w-3 h-4" src={copy} alt="" />
+              </span>{" "}
+              <span> Bulk Upload</span>
+            </button>
+            <button className="bg-black flex flex-row cursor-pointer text-white rounded-full px-3 py-1.5 text-xs font-medium">
+              <span>
+                <IoMdAdd className="mr-1 mt-0.5 text-sm" />
+              </span>{" "}
+              <span>Add Product</span>
+            </button>
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex lg:flex-row md:flex-row gap-2">
-          <button className="border flex flex-row gap-1 cursor-pointer border-gray-400 rounded-full px-3 py-1.5 text-xs font-medium">
-            <span>
-              <img className="w-3 h-4" src={copy} alt="" />
-            </span>{" "}
-            <span> Bulk Upload</span>
-          </button>
-          <button className="bg-black flex flex-row cursor-pointer text-white rounded-full px-3 py-1.5 text-xs font-medium">
-            <span>
-              <IoMdAdd className="mr-1 mt-0.5 text-sm" />
-            </span>{" "}
-            <span>Add Product</span>
-          </button>
+        {/* Product Table */}
+        <div className="bg-white shadow-sm overflow-hidden">
+          <div className="p-4 text-lg font-semibold">
+            All Products({filteredProducts.length})
+          </div>
+
+          <DataTable
+            value={filteredProducts.slice(startIndex - 1, endIndex)}
+            emptyMessage={emptyMessageTemplate}
+            className="text-[12px] "
+            tableClassName="border-collapse w-full text-center text-[12px]"
+            scrollable
+            scrollHeight="calc(100vh - 300px)"
+          >
+            <Column field="sku" header="SKU ID" style={{ width: "20%" }} />
+            <Column
+              field="product"
+              header="Product"
+              body={productTemplate}
+              sortable
+              sortField="product.name"
+              style={{ width: "18%" }}
+            />
+            <Column
+              field="category"
+              header="Category"
+              style={{ width: "12%" }}
+            />
+            <Column
+              field="subCategory"
+              header="Sub Category"
+              style={{ width: "10%" }}
+            />
+            <Column
+              field="price"
+              header="Price"
+              body={priceTemplate}
+              style={{ width: "10%" }}
+            />
+            <Column
+              field="stock"
+              header="Stock"
+              body={stockTemplate}
+              sortable
+              style={{ width: "8%" }}
+            />
+            <Column
+              field="status"
+              header="Status"
+              body={statusTemplate}
+              sortable
+              style={{ width: "12%" }}
+            />
+            <Column
+              header="Actions"
+              body={actionsTemplate}
+              style={{ width: "2%" }}
+            />
+          </DataTable>
+
+          {/* Custom pagination */}
+          {customPaginationTemplate()}
         </div>
       </div>
-
-      {/* Product Table */}
-      <div className="bg-white shadow-sm overflow-hidden">
-        <div className="p-4 text-lg font-semibold">
-          All Products({filteredProducts.length})
-        </div>
-
-        <DataTable
-          value={filteredProducts}
-          emptyMessage={emptyMessageTemplate}
-          className="text-[12px] "
-          tableClassName="border-collapse w-full text-center text-[12px]"
-          paginator
-          rows={10}
-          rowsPerPageOptions={[10]}
-          paginatorTemplate="CurrentPageReport NextPageLink"
-          currentPageReportTemplate="Products {first} of {totalRecords}"
-          paginatorClassName="border-t bg-white p-3 flex justify-between items-center"
-          scrollable
-          scrollHeight="calc(100vh - 300px)"
-          paginatorLeft={
-            <div className="text-xs text-gray-600">
-              Products {Math.min(filteredProducts.length > 0 ? 1 : 0, 10)} of{" "}
-              {filteredProducts.length}
-            </div>
-          }
-          paginatorRight={
-            <div className="flex items-center gap-3">
-              <button className="bg-black flex flex-row text-white px-3 py-2 rounded-full text-xs font-medium">
-                <span> Next page </span>
-                <span className="text-xl mr-1 ml-2">
-                  <IoMdArrowForward />
-                </span>
-              </button>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <span>Page</span>
-                <select className="border rounded px-2 py-1 text-xs">
-                  <option>1</option>
-                </select>
-                <span>of 1</span>
-              </div>
-            </div>
-          }
-        >
-          <Column field="sku" header="SKU ID" style={{ width: "20%" }} />
-          <Column
-            field="product"
-            header="Product"
-            body={productTemplate}
-            sortable
-            sortField="product.name"
-            style={{ width: "18%" }}
-          />
-          <Column field="category" header="Category" style={{ width: "12%" }} />
-          <Column
-            field="subCategory"
-            header="Sub Category"
-            style={{ width: "10%" }}
-          />
-          <Column
-            field="price"
-            header="Price"
-            body={priceTemplate}
-            style={{ width: "10%" }}
-          />
-          <Column
-            field="stock"
-            header="Stock"
-            body={stockTemplate}
-            sortable
-            style={{ width: "8%" }}
-          />
-          <Column
-            field="status"
-            header="Status"
-            body={statusTemplate}
-            sortable
-            style={{ width: "12%" }}
-          />
-          <Column
-            header="Actions"
-            body={actionsTemplate}
-            style={{ width: "2%" }}
-          />
-        </DataTable>
-      </div>
+      {isBulkOpen && <Bulkupload onClose={() => setIsBulkOpen(false)} />}
     </div>
   );
 };

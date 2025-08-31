@@ -35,7 +35,7 @@ const Mainroutes: React.FC = () => {
         <Route path="/emptyproducts" element={<EmptyProducts />} />
         <Route path="/products" element={<Products />} />
         <Route path="/loading" element={<DashboardSkeleton />} />
-        <Route path="/bulkupload" element={<Bulkupload />} />
+        <Route path="/bulkupload" element={<Bulkupload onClose={() => {}} />} />
 
         {/* add more sidebar pages here */}
       </Route>

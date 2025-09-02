@@ -10,6 +10,9 @@ import EmptyProducts from "../Pages/02-Products/EmptyProducts";
 import Products from "../Pages/02-Products/Products";
 import DashboardSkeleton from "../Pages/01-Dashboard/DashboardSkeleton";
 import Bulkupload from "../Pages/02-Products/Bulkupload";
+import AddProducts from "../Pages/02-Products/AddProducts";
+import AdminDashboard from "../Pages/AdminPanel/00-AdminDashboard/AdminDashboard";
+import AdminBrand from "../Pages/AdminPanel/01-AdminBrand/AdminBrand";
 
 // Layout with sidebar
 const Layout: React.FC = () => (
@@ -36,6 +39,11 @@ const Mainroutes: React.FC = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/loading" element={<DashboardSkeleton />} />
         <Route path="/bulkupload" element={<Bulkupload onClose={() => {}} />} />
+        <Route path="/addproducts" element={<AddProducts />} />
+
+        {/* Admin Panel */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-brands" element={<AdminBrand />} />
 
         {/* add more sidebar pages here */}
       </Route>

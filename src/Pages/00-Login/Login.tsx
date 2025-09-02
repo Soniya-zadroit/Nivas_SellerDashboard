@@ -1,11 +1,45 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import login from "../../assets/Login/LoginBg.png";
 import logo from "../../assets/Images/logo.png";
 import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
   const navigate = useNavigate();
+  const randomName = React.useMemo(
+    () => `field_${Math.random().toString(36).substr(2, 9)}`,
+    []
+  );
+
+  const validateForm = () => {
+    let newErrors: { email?: string; password?: string } = {};
+
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Enter a valid email";
+    }
+
+    // if (!password) {
+    //   newErrors.password = "Password is required";
+    // } else if (password.length < 6) {
+    //   newErrors.password = "Password must be at least 6 characters";
+    // }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      navigate("/password");
+    }
+  };
 
   return (
     <div
@@ -41,9 +75,9 @@ const Login: React.FC = () => {
         <div
           className="w-full sm:w-[80%] md:w-[50%] lg:w-[36%] rounded-2xl p-8 shadow-2xl border border-amber-300/30"
           style={{
-            background: "rgba(0, 0, 0, 0.2)", // transparent black overlay
+            background: "rgba(0, 0, 0, 0.2)",
             backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)", // for Safari
+            WebkitBackdropFilter: "blur(10px)",
             color: "#fff",
             boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
             borderRadius: "15px",
@@ -58,8 +92,11 @@ const Login: React.FC = () => {
             {/* Email */}
             <div className="relative w-full">
               <input
+                name={randomName}
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder=" "
                 className="peer w-full px-1 pt-7 pb-2 rounded-md bg-transparent border-b border-b-white text-white
                   focus:outline-none focus:border-amber-200 focus:ring-0 transition-all duration-200"
@@ -72,13 +109,19 @@ const Login: React.FC = () => {
               >
                 Email address
               </label>
+              {errors.email && (
+                <p className="text-white text-[10px] mt-2">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
             <div className="relative w-full">
               <input
+                name={randomName}
                 type={showPassword ? "text" : "password"}
                 id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder=" "
                 className="peer w-full px-1 pt-7 pb-2 rounded-md bg-transparent border-b border-b-white text-white
                   focus:outline-none focus:border-amber-200 focus:ring-0 transition-all duration-200 pr-12"
@@ -116,8 +159,8 @@ const Login: React.FC = () => {
                       strokeLinejoin="round"
                       strokeWidth={2}
                       d="M2.458 12C3.732 7.943 7.523 5 
-          12 5c4.478 0 8.268 2.943 9.542 7-1.274 
-          4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          12 5c4.478 0 8.268 2.943 9.542 7-1.274 
+                          4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     />
                   </svg>
                 ) : (
@@ -129,20 +172,19 @@ const Login: React.FC = () => {
                     strokeWidth={2}
                     viewBox="0 0 24 24"
                   >
-                    {/* Eye outline */}
                     <path d="M3 12s4-5 9-5 9 5 9 5-4 5-9 5-9-5-9-5z" />
-                    {/* Diagonal slash */}
                     <line x1="4" y1="4" x2="20" y2="20" />
                   </svg>
                 )}
               </button>
+              {/* {errors.password && (
+                <p className="text-red-400 text-xs mt-1">{errors.password}</p>
+              )} */}
             </div>
 
             {/* Continue button */}
             <button
-              onClick={() => {
-                navigate("/password");
-              }}
+              onClick={handleSubmit}
               className="w-full bg-black text-white py-3 rounded-full font-medium text-sm hover:bg-black cursor-pointer transition-colors duration-200"
             >
               Continue

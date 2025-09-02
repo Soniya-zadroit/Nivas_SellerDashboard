@@ -7,6 +7,38 @@ const PasswordPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<{ password?: string; confirm?: string }>(
+    {}
+  );
+
+  const validate = () => {
+    let newErrors: { password?: string; confirm?: string } = {};
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirm = "Please confirm your password";
+    } else if (confirmPassword !== password) {
+      newErrors.confirm = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <>
       <div
@@ -64,9 +96,11 @@ const PasswordPage: React.FC = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder=" "
                   className="peer w-full px-1 pt-7 pb-2 rounded-md bg-transparent border-b border-b-white text-white 
-      focus:outline-none focus:border-amber-200 focus:ring-0 transition-all duration-200 pr-12"
+                focus:outline-none focus:border-amber-200 focus:ring-0 transition-all duration-200 pr-12"
                 />
                 <label
                   htmlFor="password"
@@ -121,6 +155,9 @@ const PasswordPage: React.FC = () => {
                     </svg>
                   )}
                 </button>
+                {errors.password && (
+                  <p className="text-white  text-[10px] mt-2 px-1">{errors.password}</p>
+                )}
               </div>
 
               {/* Password field with floating label */}
@@ -128,9 +165,11 @@ const PasswordPage: React.FC = () => {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirm-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder=" "
                   className="peer w-full px-1 pt-7 pb-2 rounded-md bg-transparent border-b border-b-white text-white 
-      focus:outline-none focus:border-amber-200 focus:ring-0 transition-all duration-200 pr-12"
+                focus:outline-none focus:border-amber-200 focus:ring-0 transition-all duration-200 pr-12"
                 />
                 <label
                   htmlFor="confirm-password"
@@ -185,13 +224,14 @@ const PasswordPage: React.FC = () => {
                     </svg>
                   )}
                 </button>
+                {errors.confirm && (
+                  <p className="ttext-white  text-[10px] mt-2 px-1">{errors.confirm}</p>
+                )}
               </div>
 
-              <div className="mb-20">
+              <div className="mb-10">
                 <button
-                  onClick={() => {
-                    navigate("/dashboard");
-                  }}
+                  onClick={handleSubmit}
                   className="w-full bg-black cursor-pointer text-white py-3 rounded-full font-medium text-sm hover:bg-black transition-colors duration-200 mt-6"
                 >
                   Go to Dashboard

@@ -28,6 +28,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { MenuItem } from "primereact/menuitem";
 import { BreadCrumb } from "primereact/breadcrumb";
 import DashboardSkeleton from "./DashboardSkeleton";
+import productimg from "../../assets/Icons/dashboardproduct.png";
+import { IoMdArrowForward } from "react-icons/io";
 
 // RingChart component
 const calculateRingSize = ({
@@ -162,7 +164,7 @@ const Dashboard = () => {
         returnChange: "10.3%",
         exchange: "125",
         exchangeChange: "10.3%",
-        image: "👕",
+        image: productimg,
       },
       {
         id: 2,
@@ -173,7 +175,7 @@ const Dashboard = () => {
         returnChange: "10.3%",
         exchange: "125",
         exchangeChange: "10.3%",
-        image: "🧥",
+        image: productimg,
       },
       {
         id: 3,
@@ -184,7 +186,7 @@ const Dashboard = () => {
         returnChange: "10.3%",
         exchange: "125",
         exchangeChange: "10.3%",
-        image: "👟",
+        image: productimg,
       },
       {
         id: 4,
@@ -195,7 +197,7 @@ const Dashboard = () => {
         returnChange: "10.3%",
         exchange: "125",
         exchangeChange: "10.3%",
-        image: "🤵",
+        image: productimg,
       },
       {
         id: 5,
@@ -206,7 +208,7 @@ const Dashboard = () => {
         returnChange: "10.3%",
         exchange: "125",
         exchangeChange: "10.3%",
-        image: "👖",
+        image: productimg,
       },
     ],
     notifications: [
@@ -541,7 +543,8 @@ const Dashboard = () => {
     return (
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg">
-          {rowData.image}
+          {/* {rowData.image} */}
+          <img src={rowData.image} alt={rowData.name} className="w-8 h-8" />
         </div>
         <span className="text-sm text-gray-900">{rowData.name}</span>
       </div>
@@ -597,6 +600,81 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
+  // Add these state variables and calculations above the customPaginationTemplate function
+  const itemsPerPage = 5; // Since you're showing 5 products in the table
+  const totalItems = dashboardData.topProducts.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
+
+  // Get current page items
+  const getCurrentPageItems = () => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return dashboardData.topProducts.slice(start, end);
+  };
+
+  // Fixed customPaginationTemplate function
+  const customPaginationTemplate = () => {
+    if (totalItems === 0) return null;
+
+    return (
+      <div className="flex items-center justify-between w-full px-4 py-3 bg-white border-t">
+        {/* Left side - Products count */}
+        <div className="flex items-center text-sm text-gray-600">
+          <span className="font-medium text-gray-900">Products</span>
+          <span className="mx-2">{startIndex}</span>
+          <span className="mx-1">-</span>
+          <span className="mx-1">{endIndex}</span>
+          <span className="mx-1">of</span>
+          <span className="mx-1">{totalItems}</span>
+        </div>
+
+        <div className="flex items-center">
+          {/* Previous page button */}
+          {/* <button
+            className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+            disabled={currentPage <= 1}
+          >
+            <ChevronLeft className="text-sm" />
+            <span>Previous</span>
+          </button> */}
+
+          {/* Next page button */}
+          <button
+            className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-[#000] transition-colors cursor-pointer"
+            onClick={() =>
+              setCurrentPage(Math.min(currentPage + 1, totalPages))
+            }
+            disabled={currentPage >= totalPages}
+          >
+            <span>Next page</span>
+            <IoMdArrowForward className="text-sm" />
+          </button>
+        </div>
+        {/* Right side - Navigation and page selector */}
+        <div className="flex items-center ">
+          {/* Page selector */}
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>Page</span>
+            <select
+              className="border  rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2"
+              value={currentPage}
+              onChange={(e) => setCurrentPage(Number(e.target.value))}
+            >
+              {Array.from({ length: totalPages }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+            <span>of {totalPages}</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
   return (
     <>
       {isLoading ? (
@@ -876,9 +954,10 @@ const Dashboard = () => {
                       style={{ minWidth: "120px" }}
                     />
                   </DataTable>
+                  {customPaginationTemplate()}
                 </div>
 
-                <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                {/* <div className="flex justify-between items-center mt-4 pt-4 border-t">
                   <div className="text-sm text-gray-600">
                     Products <span className="font-medium">5</span> of 10
                   </div>
@@ -895,7 +974,7 @@ const Dashboard = () => {
                       <span>of 2</span>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

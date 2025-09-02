@@ -16,13 +16,25 @@ html {
   display: none;
 }
 
+/* Dark mode override */
+@media (prefers-color-scheme: dark) {
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important; /* transparent bg */
+    -webkit-text-fill-color: #fff !important; /* white text */
+    background-color: transparent !important; /* fallback */
+    transition: background-color 5000s ease-in-out 0s; /* prevents yellow bg flash */
+  }
+}
+
 /* Hide scrollbar but allow scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE/Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
 }
 /* Hide scrollbar but keep scroll */
 .scrollbar-hide::-webkit-scrollbar {
@@ -30,10 +42,8 @@ html {
 }
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE & Edge */
-  scrollbar-width: none;    /* Firefox */
+  scrollbar-width: none; /* Firefox */
 }
-
-
 
 /* For Firefox */
 html {
@@ -46,12 +56,12 @@ body {
 }
 /* index.css */
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari */
+  display: none; /* Chrome, Safari */
 }
 
 .agraham {
@@ -145,9 +155,8 @@ body {
 }
 
 .p-inputtext {
-  @apply rounded-lg
+  @apply rounded-lg;
 }
-
 
 /* Hide scrollbar for Chrome, Safari, Edge */
 ::-webkit-scrollbar {
@@ -163,5 +172,3 @@ html {
 html {
   -ms-overflow-style: none;
 }
-
-

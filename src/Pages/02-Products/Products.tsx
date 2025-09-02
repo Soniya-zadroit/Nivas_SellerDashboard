@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BreadCrumb } from "primereact/breadcrumb";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { MenuItem } from "primereact/menuitem";
 import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
 import productIcon from "../../assets/Dashboard/Products.png";
@@ -349,6 +349,7 @@ const sampleProducts = [
 const Products: React.FC = () => {
   const location = useLocation();
   const currentLabel = pathToLabel[location.pathname] || "Products";
+  const navigate = useNavigate();
 
   const [isBulkOpen, setIsBulkOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -505,7 +506,7 @@ const Products: React.FC = () => {
       <p className="text-gray-500 text-sm mb-4">
         The products will be displayed here <br /> once you added them
       </p>
-      <button className="bg-black flex flex-row cursor-pointer text-white rounded-full px-4 py-2 text-sm font-medium">
+      <button onClick={() => navigate("/addproducts")} className="bg-black flex flex-row cursor-pointer text-white rounded-full px-4 py-2 text-sm font-medium">
         <span>
           <IoMdAdd className="mr-2 mt-1 " />
         </span>
@@ -619,7 +620,7 @@ const Products: React.FC = () => {
               </span>{" "}
               <span> Bulk Upload</span>
             </button>
-            <button className="bg-black flex flex-row cursor-pointer text-white rounded-full px-3 py-1.5 text-xs font-medium">
+            <button onClick={() => navigate("/addproducts")} className="bg-black flex flex-row cursor-pointer text-white rounded-full px-3 py-1.5 text-xs font-medium">
               <span>
                 <IoMdAdd className="mr-1 mt-0.5 text-sm" />
               </span>{" "}
